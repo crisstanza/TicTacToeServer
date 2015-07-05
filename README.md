@@ -1,7 +1,7 @@
 # TicTacToeServer
 TicTacToe project server. See: https://github.com/crisstanza/TicTacToe
 
-TicTacToeServer is a REST web service. Check it out: http://crisstanza.github.io/TicTacToeServer/
+TicTacToeServer is a REST web service. Check it out: http://tictactoeserver.esy.es/
 
 
 #### See also
