@@ -1,2 +1,2 @@
 # TicTacToeServer
-TicTacToe project server
+TicTacToe project server. See: https://github.com/crisstanza/TicTacToe
