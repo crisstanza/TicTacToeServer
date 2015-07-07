@@ -16,6 +16,10 @@ class F {
 	}
 
 	public static function getRequestBody() {
+
+		// $entityBody = stream_get_contents(STDIN);
+
+
 		$rawInput = fopen('php://input', 'r');
 		$tempStream = fopen('php://temp', 'r+');
 		stream_copy_to_stream($rawInput, $tempStream);
