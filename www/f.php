@@ -34,4 +34,6 @@ class F {
 
 }
 
+include_once('./c.php');
+
 ?>
