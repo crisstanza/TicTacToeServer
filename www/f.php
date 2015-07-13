@@ -2,6 +2,12 @@
 
 date_default_timezone_set('UTC');
 
+class ServiceRequest {
+
+	var $op;
+
+}
+
 class F { 
 
 	public static function setFromRequest($instance) {
@@ -9,17 +15,17 @@ class F {
 		$members = get_class_vars($class_name);
 		foreach ($members as $name => $value) {
 			$parameterValue = isset($_REQUEST[$name]) ? urldecode($_REQUEST[$name]) : '';
-			$parameterValueParsed = Base::parse($class_name, $name, $parameterValue);
+			$parameterValueParsed = parse($class_name, $name, $parameterValue);
 			$instance->{$name} = $parameterValueParsed;
 		}
 		return $instance;
 	}
 
+	public static function setFromString($instance) {
+	}
+
 	public static function getRequestBody() {
-
-		// $entityBody = stream_get_contents(STDIN);
-
-
+		// return stream_get_contents(STDIN);
 		$rawInput = fopen('php://input', 'r');
 		$tempStream = fopen('php://temp', 'r+');
 		stream_copy_to_stream($rawInput, $tempStream);
@@ -33,7 +39,5 @@ class F {
 	}
 
 }
-
-include_once('./c.php');
 
 ?>

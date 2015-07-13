@@ -1,12 +1,17 @@
 <?php
 
 include_once('./f.php');
+include_once('./f.classes.php');
+
+$serviceRequest = new ServiceRequest();
+setFromRequest($serviceRequest);
 
 if (F::isPost()) {
-	echo 1;
+	echo 1;	
 } else {
 	echo 2;	
 }
 
-?>         
-Cris Stanza
+echo '<br>' . $serviceRequest->op;
+
+?>
