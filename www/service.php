@@ -3,7 +3,7 @@
 include_once('./f.php');
 include_once('./f.classes.php');
 
-$serviceRequest = F::setFromRequest(new ServiceRequest());
+$serviceRequest = F::setFromRequestParameters(new ServiceRequest());
 
 $operator = F::setFromStringName($serviceRequest->op.'Operator');
 

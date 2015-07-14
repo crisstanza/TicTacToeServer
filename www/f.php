@@ -19,7 +19,7 @@ abstract class F {
 		return new $class_name;
 	}
 
-	public static function setFromRequest($instance) {
+	public static function setFromRequestParameters($instance) {
 		$class_name = get_class($instance);
 		$members = get_class_vars($class_name);
 		foreach ($members as $name => $value) {
@@ -30,11 +30,25 @@ abstract class F {
 		return $instance;
 	}
 
+	public static function setFromRequestBody($instance) {
+		$class_name = get_class($instance);
+		$members = get_class_vars($class_name);
+		$requestBody = F::getRequestBody();
+		$lines = explode(PHP_EOL, $requestBody);
+		$i = 0;
+		foreach ($members as $name => $value) {
+			$parameterValue = urldecode($lines[$i++]);
+			$parameterValueParsed = F::parse($class_name, $name, $parameterValue);
+			$instance->{$name} = $parameterValueParsed;
+		}
+		return $instance;
+	}
+
 	public static function parse($class_name, $property, $value) {
 		$type = F::type($class_name, $property);
 		switch ($type) {
     		case 'bool':
-    			return F::boolean_value($value);
+    			return F::booleanValue($value);
         	break;
 			default:
 				return $value;
@@ -43,14 +57,14 @@ abstract class F {
 	}
 
 	public static function type($class_name, $property) {
-		return F::annotation_value($class_name, $property, 'type');
+		return F::annotationValue($class_name, $property, 'type');
 	}
 
-	public static function boolean_value($value) {
+	public static function booleanValue($value) {
 		return strtolower($value) == 'true' || $value == 1 ? '1': '0';
 	}
 
-	public static function annotation_value($class_name, $property, $annotation_name) {
+	public static function annotationValue($class_name, $property, $annotation_name) {
 		$rc = new ReflectionClass($class_name);
 		$comment = $rc->getProperty($property)->getDocComment();
 		$start = strpos($comment, '/**') + 3;
@@ -58,10 +72,6 @@ abstract class F {
 		$annotationString = trim(substr($comment, $start, $end));
 		parse_str($annotationString, $annotation);
 		return isset($annotation[$annotation_name]) ? $annotation[$annotation_name] : '';
-	}
-
-	public static function setFromRequestBody($instance) {
-		return $instance;
 	}
 
 	public static function getRequestBody() {
