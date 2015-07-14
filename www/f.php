@@ -56,7 +56,7 @@ abstract class F {
 		return isset($annotation[$annotation_name]) ? $annotation[$annotation_name] : '';
 	}
 
-	public static function setFromRequetBody($instance) {
+	public static function setFromRequestBody($instance) {
 		return $instance;
 	}
 
