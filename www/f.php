@@ -1,5 +1,9 @@
 <?php
 
+/*
+	This is the "F" framework.
+*/
+
 date_default_timezone_set('UTC');
 
 class ServiceRequest {
