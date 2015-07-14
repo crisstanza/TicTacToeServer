@@ -3,15 +3,12 @@
 include_once('./f.php');
 include_once('./f.classes.php');
 
-$serviceRequest = new ServiceRequest();
-setFromRequest($serviceRequest);
+$serviceRequest = F::setFromRequest(new ServiceRequest());
 
-if (F::isPost()) {
-	echo 1;	
-} else {
-	echo 2;	
-}
+$operation = F::setFromStringName($serviceRequest->op);
+F::setFromRequetBody($operation);
 
-echo '<br>' . $serviceRequest->op;
+$operator = F::setFromStringName($serviceRequest->op . 'Operator');
+$operator->operate($operation);
 
 ?>
