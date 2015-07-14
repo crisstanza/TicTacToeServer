@@ -9,7 +9,7 @@ class ServiceRequest {
 
 }
 
-class F { 
+abstract class F { 
 
 	public static function setFromStringName($class_name) {
 		return new $class_name;
