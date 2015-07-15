@@ -4,19 +4,19 @@ class Game {
 
 }
 
-class GetGames {
+class GetGame {
 
 }
 
-class GetGamesOperator {
+class GetGameOperator {
 
 	public function operate($operation, $dao) {
-		echo '0'."\n".'         '."\n".'Cris Stanza';
+		echo '         '."\n".'0'."\n".'Cris Stanza';
 	}
 
 }
 
-class GetGamesDao {
+class GetGameDao {
 	
 }
 

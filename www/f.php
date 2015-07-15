@@ -34,7 +34,7 @@ abstract class F {
 		$class_name = get_class($instance);
 		$members = get_class_vars($class_name);
 		$requestBody = F::getRequestBody();
-		$lines = explode(PHP_EOL, $requestBody);
+		$lines = explode("\n", $requestBody);
 		$i = 0;
 		foreach ($members as $name => $value) {
 			$parameterValue = urldecode($lines[$i++]);
