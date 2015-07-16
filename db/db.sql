@@ -1,11 +1,11 @@
 --
 --  mysql -u root
 --
--- CREATE USER 'user'@'localhost' IDENTIFIED BY 'pass';
--- GRANT USAGE ON *.* TO user@localhost identified by 'pass';
--- GRANT ALL PRIVILEGES ON user.* TO user@localhost;
--- CREATE DATABASE IF NOT EXISTS base;
--- ALTER DATABASE base CHARACTER SET utf8 COLLATE utf8_general_ci;
+-- CREATE USER 'u245853626_user'@'localhost' IDENTIFIED BY 'password';
+-- GRANT USAGE ON *.* TO u245853626_user@localhost identified by 'password';
+-- GRANT ALL PRIVILEGES ON u245853626_user.* TO u245853626_user@localhost;
+-- CREATE DATABASE IF NOT EXISTS u245853626_base;
+-- ALTER DATABASE u245853626_base CHARACTER SET utf8 COLLATE utf8_general_ci;
 --
 -- SHOW VARIABLES LIKE 'character_set_database';
 -- SHOW VARIABLES LIKE 'collation_database';
