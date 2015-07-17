@@ -14,7 +14,7 @@ class Game {
 	/** type=string */
 	var $turn;
 
-	public function Game($id) {
+	public function Game($id=null) {
 		$this->id = $id;
 	}
 
@@ -22,7 +22,7 @@ class Game {
 
 //////////////////////////////////////////////////////////////////////
 
-/** operation */
+/* operation */
 class GetGame {
 
 }
@@ -30,8 +30,7 @@ class GetGame {
 class GetGameOperator {
 
 	public function operate($operation, $dao) {
-		var $game = $dao::findGameById(1);
-		echo '         '."\n".'0'."\n".'Cris Stanza';
+		$game = $dao->findGameById(1);
 		echo F::getFromInstance($game);
 	}
 
@@ -40,8 +39,13 @@ class GetGameOperator {
 class GetGameDao extends D {
 	
 	public function findGameById($id) {
-		return base::findById(new Game($id));
+		return parent::findById(new Game($id));
 	}
+
+	public function rowToObjectTransformer($row) {
+		return parent::setFromResultSet($row, new Game());
+	}
+
 }
 
 ?>

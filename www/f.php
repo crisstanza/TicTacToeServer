@@ -43,7 +43,7 @@ abstract class F {
 		$lines = explode("\n", $requestBody);
 		$i = 0;
 		foreach ($members as $name => $value) {
-			$parameterValue = urldecode($lines[$i++]);
+			$parameterValue = $lines[$i++];
 			$parameterValueParsed = F::parse($class_name, $name, $parameterValue);
 			$instance->{$name} = $parameterValueParsed;
 		}
@@ -51,13 +51,14 @@ abstract class F {
 	}
 
 	public static function getFromInstance($instance) {
-		$class_name = get_class($instance);
-		$members = get_class_vars($class_name);
+		$members = get_object_vars($instance);
+		ksort($members, SORT_REGULAR);
 		$result = array();
 		foreach ($members as $name => $value) {
-			$lineValue = urlencode($value);
+			$lineValue = $value;
 			array_push($result, $lineValue, "\n");
 		}
+		array_pop($result);
 		return join($result);
 	}
 
@@ -105,6 +106,14 @@ abstract class I {
 		return self::annotationValue($class_name, $property, 'type');
 	}
 
+	public static function mandatory($class_name, $property) {
+		return N::booleanValue(self::annotationValue($class_name, $property, 'mandatory'));
+	}
+
+	public static function transient($class_name, $property) {
+		return N::booleanValue(self::annotationValue($class_name, $property, 'transient'));
+	}
+
 }
 
 abstract class N {
@@ -117,12 +126,24 @@ abstract class N {
 
 abstract class D {
 
+	/*
+		Códigos de erro conhecidos:
+			- 1040 : too many connections
+			- 1044 : usuário inválido
+			- 1045 : senha inválida
+			- 1049 : banco de dados desconhecido
+			- 1054 : coluna desconhecida na cláusula where
+			- 1062 : chave duplicada em consulta sql executada
+			- 1064 : erro de sintaxe em consulta sql executada
+			- 2002, 2003 : servidor de banco de dados desligado ou host inválido
+			- 1146 : ???
+	*/
 	public function open() {
-		@$con = mysql_connect('localhost', 'user', 'pass');
+		@$con = mysql_connect('localhost', 'u245853626_user', 'password');
 		if (!$con) {
 			throw new Exception(mysql_errno());
 		}
-		@$db = mysql_select_db('base'), $con);
+		@$db = mysql_select_db('u245853626_base', $con);
 		if (!$db) {
 			throw new Exception(mysql_errno());
 		}
@@ -136,6 +157,17 @@ abstract class D {
 				throw new Exception(mysql_errno().' '.mysql_error());
 			}
 		}
+	}
+
+	public function setFromResultSet($row, $obj) {
+		$members = get_class_vars(get_class($obj));
+		foreach ($members as $name => $value) {
+			$transient = I::transient(get_class($obj), $name);
+			if (!$transient) {
+				$obj->{$name} = $row[$name];
+			}
+		}
+		return $obj;
 	}
 
 	public static function quotes($class_name, $property, $str, $con) {
@@ -164,7 +196,7 @@ abstract class D {
 	public static function sqlFindById($con, $obj) {
 		$class_name = get_class($obj);
 		$sql = array();
-		array_push($sql, 'SELECT * FROM ', strtolower($class_name), ' WHERE id=', self::quotes($class_name, 'id', $vo->id, $con));
+		array_push($sql, 'SELECT * FROM ', strtolower($class_name), ' WHERE id=', self::quotes($class_name, 'id', $obj->id, $con));
 		return join($sql);
 	}
 
