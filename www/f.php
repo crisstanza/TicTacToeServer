@@ -214,4 +214,64 @@ abstract class D {
 
 }
 
+abstract class E {
+
+	public static function sendMail($from, $namefrom, $to, $nameto, $subject, $message, $ccArray=null, $bccArray=null) {
+		$smtpServer = 'localhost';
+		$port = 25;
+		$timeout = 30;
+		$username = '';
+		$password = '';
+		$localhost = $_SERVER['SERVER_NAME'];
+		$newLine = "\r\n";
+
+		$smtpConnect = fsockopen($smtpServer, $port, $errno, $errstr, $timeout);
+		$smtpResponse = fgets($smtpConnect);
+		if( empty($smtpConnect) ) {
+			$return "Failed to connect: $smtpResponse";
+		}
+
+		fputs($smtpConnect,"AUTH LOGIN" . $newLine);
+		$smtpResponse = fgets($smtpConnect);
+		fputs($smtpConnect, base64_encode($username) . $newLine);
+		$smtpResponse = fgets($smtpConnect);
+		fputs($smtpConnect, base64_encode($password) . $newLine);
+		$smtpResponse = fgets($smtpConnect);
+		fputs($smtpConnect, "HELO $localhost" . $newLine);
+		$smtpResponse = fgets($smtpConnect);
+		fputs($smtpConnect, "MAIL FROM: $from" . $newLine);
+		$smtpResponse = fgets($smtpConnect);
+		fputs($smtpConnect, "RCPT TO: $to" . $newLine);
+		$smtpResponse = fgets($smtpConnect);
+		fputs($smtpConnect, "DATA" . $newLine);
+		$smtpResponse = fgets($smtpConnect);
+
+		$headers = "MIME-Version: 1.0" . $newLine;
+		$headers .= "Content-type: text/html; charset=UTF-8" . $newLine;
+		$headers .= "To: ".self::encodeHeaderValue($nameto)." <$to>" . $newLine;
+		$headers .= "From: ".self::encodeHeaderValue($namefrom)." <$from>" . $newLine;
+		if ( $ccArray != null ) {
+			foreach ( $ccArray as $cc ) {
+				$headers .= "Cc: ".self::encodeHeaderValue($cc['name'])." <".$cc['email'].">" . $newLine;
+			}
+		}
+		if ( $bccArray != null ) {
+			foreach ( $bccArray as $bcc ) {
+				$headers .= "Bcc: ".self::encodeHeaderValue($bcc['name'])." <".$bcc['email'].">" . $newLine;
+			}
+		}
+		fputs($smtpConnect, "Subject: ".self::encodeHeaderValue($subject)."\n$headers\n\n$message\n.\n");
+		$smtpResponse = fgets($smtpConnect);
+		fputs($smtpConnect, "QUIT" . $newLine);
+		$smtpResponse = fgets($smtpConnect);
+		return true;
+	}
+
+	public static function encodeHeaderValue($str) {
+		return empty($str) ? '' : '=?UTF-8?B?'.base64_encode($str).'?=';
+		}
+	}
+
+}
+
 ?>
