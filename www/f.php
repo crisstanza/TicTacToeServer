@@ -76,6 +76,21 @@ abstract class F {
 		return $method == 'POST';
 	}
 
+	public static function isGet() {
+		$method = $_SERVER['REQUEST_METHOD'];
+		return $method == 'GET';
+	}
+
+	public static function isPut() {
+		$method = $_SERVER['REQUEST_METHOD'];
+		return $method == 'PUT';
+	}
+
+	public static function isDelete() {
+		$method = $_SERVER['REQUEST_METHOD'];
+		return $method == 'DELETE';
+	}
+
 }
 
 abstract class I {
@@ -138,7 +153,7 @@ abstract class D {
 			- 2002, 2003 : servidor de banco de dados desligado ou host inválido
 			- 1146 : ???
 	*/
-	public function open() {
+	private function open() {
 		@$con = mysql_connect('localhost', 'u245853626_user', 'password');
 		if (!$con) {
 			throw new Exception(mysql_errno());
@@ -150,7 +165,7 @@ abstract class D {
 		return $con;
 	}
 
-	public function close($con, $conWasNull) {
+	private function close($con, $conWasNull) {
 		if ($conWasNull) {
 			@$rs = mysql_close($con);
 			if (!$rs) {
@@ -159,7 +174,9 @@ abstract class D {
 		}
 	}
 
-	public function setFromResultSet($row, $obj) {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private function setFromResultSet($row, $obj) {
 		$members = get_class_vars(get_class($obj));
 		foreach ($members as $name => $value) {
 			$transient = I::transient(get_class($obj), $name);
@@ -170,7 +187,9 @@ abstract class D {
 		return $obj;
 	}
 
-	public static function quotes($class_name, $property, $str, $con) {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private static function quotes($class_name, $property, $str, $con) {
 		$type = I::type($class_name, $property);
 		if (strlen(trim($str)) <= 0) {
 			return "NULL";
@@ -181,7 +200,9 @@ abstract class D {
 		}
 	}
 
-	private function select($sql, $con) {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private function mysqlQuery($sql, $con) {
 		@$rs = mysql_query($sql, $con);
 		if (!$rs) {
 			if ($con == null) {
@@ -193,23 +214,143 @@ abstract class D {
 		return $rs;
 	}
 
-	public static function sqlFindById($con, $obj) {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private static function sqlFindById($con, $obj) {
 		$class_name = get_class($obj);
 		$sql = array();
 		array_push($sql, 'SELECT * FROM ', strtolower($class_name), ' WHERE id=', self::quotes($class_name, 'id', $obj->id, $con));
 		return join($sql);
 	}
 
+	private static function sqlInsert($con, $obj) {
+		$class_name = get_class($obj);
+		$members = get_object_vars($obj);
+		$sql = array();
+		array_push($sql, 'INSERT INTO ', strtolower($class_name), ' (');
+		foreach ($members as $name => $value) {
+			if ($name != 'id') {
+				$transient = I::transient($class_name, $name);
+				if (!$transient) {
+					array_push($sql, $name, ', ');
+				}
+			}
+		}
+		array_pop($sql);
+		array_push($sql, ')', PHP_EOL);
+		array_push($sql, 'VALUES (');
+		foreach ($members as $name => $value) {
+			if ($name != 'id') {
+				$transient = I::transient($class_name, $name);
+				if (!$transient) {
+					array_push($sql, self::quotes($class_name, $name, $value, $con), ', ');
+				}
+			}
+		}
+		array_pop($sql);
+		array_push($sql, ')', PHP_EOL);
+		return join($sql);
+	}
+
+	private static function sqlUpdate($con, $obj) {
+		$class_name = get_class($obj);
+		$members = get_object_vars($obj);
+		$sql = array();
+		array_push($sql, 'UPDATE ', strtolower($class_name), ' SET', PHP_EOL);
+		foreach ($members as $name => $value) {
+			if ($name != 'id') {
+				$transient = I::transient($class_name, $name);
+				if (!$transient) {
+					array_push($sql, '	', $name, '=', self::quotes($class_name, $name, $value, $con), ', ', PHP_EOL);
+				}
+			} else {
+				$id_value = $value;
+			}
+		}
+		array_pop($sql);
+		array_pop($sql);
+		array_push($sql, PHP_EOL);
+		array_push($sql, 'WHERE id=', self::quotes($class_name, $name, $id_value, $con));
+		return join($sql);
+	}
+
+	private static function findAllSQL($obj, $con) {
+		$class_name = get_class($obj);
+		$members = get_object_vars($obj);
+		$sql = array();
+		array_push($sql, 'SELECT * FROM ', strtolower($class_name), ' WHERE', PHP_EOL);
+		foreach ($members as $name => $value) {
+			if (strlen(trim($value)) > 0) {
+				$transient = I::transient($class_name, $name);
+				if (!$transient) {
+					array_push($sql, '	', $name, '=', DAO::quotes($class_name, $name, $value, $con), ' AND ', PHP_EOL);
+				}
+			}
+		}
+		array_push($sql, '1=1');
+		return join($sql);
+	}
+
+	public function sqlCount($con, $columnName, $obj) {
+		$sql = array();
+		array_push($sql, 'SELECT COUNT(*) AS ', $columnName, ' FROM (', self::findAllSQL($obj, $con), ')');
+		return join($sql);
+	}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	public function findById($obj) {
 		$con = self::open();
 		$sql = self::sqlFindById($con, $obj);
-		$rs = self::select($sql, $con);
+		$rs = self::mysqlQuery($sql, $con);
 		$result = null;
 		if($row = mysql_fetch_assoc($rs)) {
 			$result = call_user_func_array(array('self', 'rowToObjectTransformer'), array($row, $con));
 		}
 		self::close($con, true);
 		return $result;
+	}
+
+	public function findAll($obj) {
+		$con = self::open();
+		$sql = self::sqlFindAll($con, $obj);
+		$rs = self::mysqlQuery($sql, $con);
+		$list = array();
+		while($row = mysql_fetch_assoc($rs)) {
+			$list[] = call_user_func_array(array('self', 'rowToObjectTransformer'), array($row, $con));
+		}
+		self::close($con, true);
+		return $list;
+	}
+
+	public function count($obj) {
+		$con = self::open();
+		$columnName = 'total';
+		$sql = self::sqlCount($con, $columnName, $obj);
+		$rs = self::mysqlQuery($sql, $con);
+		$result = null;
+		if($row = mysql_fetch_assoc($rs)) {
+			$result = $row[$columnName];
+		}
+		self::close($con, true);
+		return $result;
+	}
+
+	public function insert($obj) {
+		$con = self::open();
+		$sql = self::sqlInsert($con, $obj);
+		$rs = self::mysqlQuery($sql, $con);
+		$obj->id = mysql_insert_id($con);
+		self::close($con, true);
+		return $obj;
+	}
+
+	public function update($obj) {
+		$con = self::open();
+		$sql = self::sqlUpdate($con, $obj);
+		$rs = self::mysqlQuery($sql, $con);
+		self::close($con, true);
+		return $obj;
 	}
 
 }
