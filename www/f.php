@@ -191,7 +191,7 @@ abstract class D {
 
 	private static function quotes($class_name, $property, $str, $con) {
 		$type = I::type($class_name, $property);
-		if (strlen(trim($str)) <= 0) {
+		if (strlen(trim($str)) <= 0) { // Warning: trim() expects parameter 1 to be string, object given in /Users/crisstanza/www/meuorcamento/f.php on line 194
 			return "NULL";
 		} else if (is_numeric($str) || is_bool($str)){
 			return $str;
@@ -368,8 +368,8 @@ abstract class E {
 
 		$smtpConnect = fsockopen($smtpServer, $port, $errno, $errstr, $timeout);
 		$smtpResponse = fgets($smtpConnect);
-		if( empty($smtpConnect) ) {
-			$return "Failed to connect: $smtpResponse";
+		if(empty($smtpConnect)) {
+			return "Failed to connect: $smtpResponse";
 		}
 
 		fputs($smtpConnect,"AUTH LOGIN" . $newLine);
@@ -410,7 +410,6 @@ abstract class E {
 
 	public static function encodeHeaderValue($str) {
 		return empty($str) ? '' : '=?UTF-8?B?'.base64_encode($str).'?=';
-		}
 	}
 
 }
