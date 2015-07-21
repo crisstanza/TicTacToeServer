@@ -71,6 +71,19 @@ abstract class F {
 		return stream_get_contents($tempStream);
 	}
 
+	public static function validate($obj) {
+		$class_name = get_class($obj);
+		$members = get_object_vars($obj);
+		foreach ($members as $name => $value) {
+			$mandatory = I::mandatory($class_name, $name);
+			if ($mandatory && empty($value)) {
+				return array('property' => $name, 'name' => 'mandatory');
+			}
+		}
+		$invalid = false;
+		return $invalid;
+	}
+
 	public static function isPost() {
 		$method = $_SERVER['REQUEST_METHOD'];
 		return $method == 'POST';
