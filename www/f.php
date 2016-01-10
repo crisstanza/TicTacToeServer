@@ -167,11 +167,11 @@ abstract class D {
 			- 1146 : ???
 	*/
 	private function open() {
-		@$con = mysql_connect('localhost', 'u245853626_user', 'password');
+		@$con = mysql_connect('mysql.hostinger.com.br', 'u551619286_acdj', 'acasadojava');
 		if (!$con) {
 			throw new Exception(mysql_errno());
 		}
-		@$db = mysql_select_db('u245853626_base', $con);
+		@$db = mysql_select_db('u551619286_acdj', $con);
 		if (!$db) {
 			throw new Exception(mysql_errno());
 		}
