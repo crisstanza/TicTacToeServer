@@ -2,7 +2,7 @@
 
 TicTacToe project server. See: https://github.com/crisstanza/TicTacToe
 
-TicTacToeServer is a REST web service. Check it out: http://tictactoeserver.esy.es/
+TicTacToeServer is a REST web service. Check it out: http://www.acasadojava.com.br/tictactoe/
 
 TicTacToeServer uses the "F" framework!!!
 
