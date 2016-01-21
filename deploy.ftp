@@ -1,0 +1,25 @@
+#!/bin/sh
+
+HOST="31.220.16.215"
+USER="$1"
+PASSWD="$2"
+
+if [ ! "$PASSWD" ]; then
+	echo Usage: "deploy.ftp <USER> <PASSWORD>"
+	exit -1
+fi
+
+ftp -n $HOST <<END_SCRIPT
+quote USER $USER
+quote PASS $PASSWD
+
+lcd www
+cd tictactoe
+
+mput *
+
+close
+quit
+END_SCRIPT
+
+exit 0

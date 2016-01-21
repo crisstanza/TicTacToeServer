@@ -24,7 +24,6 @@ class Game {
 
 /* operation */
 class GetGame {
-
 }
 
 class GetGameOperator {
@@ -44,6 +43,30 @@ class GetGameDao extends D {
 
 	public function rowToObjectTransformer($row) {
 		return parent::setFromResultSet($row, new Game());
+	}
+
+}
+
+//////////////////////////////////////////////////////////////////////
+
+/* operation */
+class SetGame {
+}
+
+class SetGameOperator {
+
+	public function operate($operation, $dao) {
+		$game = F::setFromRequestParameters(new Game());
+		$dao->saveGame($game);
+		echo 0;
+	}
+
+}
+
+class SetGameDao extends D {
+	
+	public function saveGame($game) {
+		return parent::update($game);
 	}
 
 }

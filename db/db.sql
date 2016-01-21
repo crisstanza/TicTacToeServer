@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS game (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	board varchar(9) NOT NULL,
 	status INT NOT NULL,
-	turn varchar(32) NOT NULL
+	turn varchar(32) NOT NULL,
+	turnPiece varchar() NOT NULL
 );
 
 INSERT INTO game (board, status, turn) VALUES ('         ', 0, 'Stanza');
