@@ -189,7 +189,7 @@ abstract class D {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	private function setFromResultSet($row, $obj) {
+	protected function setFromResultSet($row, $obj) {
 		$members = get_class_vars(get_class($obj));
 		foreach ($members as $name => $value) {
 			$transient = I::transient(get_class($obj), $name);
