@@ -57,6 +57,9 @@ class SetGameOperator {
 
 	public function operate($operation, $dao) {
 		$game = F::setFromRequestParameters(new Game());
+		if ($game->turn == 'Hellmuth') {
+			$game->turn = 'Cris Stanza';
+		}
 		$dao->saveGame($game);
 		echo 0;
 	}
