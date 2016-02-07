@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS game (
 	board varchar(9) NOT NULL,
 	status INT NOT NULL,
 	turn varchar(32) NOT NULL,
-	turnPiece varchar() NOT NULL
+	turnPiece varchar(1) NOT NULL
 );
 
-INSERT INTO game (board, status, turn) VALUES ('         ', 0, 'Stanza');
+INSERT INTO game (board, status, turn, turnPiece) VALUES ('         ', 0, 'Stanza', 'o');

@@ -14,6 +14,9 @@ class Game {
 	/** type=string */
 	var $turn;
 
+	/** type=string */
+	var $turnPiece;
+
 	public function Game($id=null) {
 		$this->id = $id;
 	}
